@@ -34,8 +34,27 @@ function App() {
 
 
 const colorGraph = () => {
+  console.log('avant de colorier', graphResult);
+  
+  // Prépare les données nécessaires pour l'envoi
+  const dataToSend = {
+      name: graphResult.name,  // Assure-toi que graphResult a un champ name
+      nodes: graphResult.nodes.map((node: { id: any; name: any; color: any; }) => ({
+          id: node.id,    // Conserve l'identifiant du noeud
+          name: node.name, // Conserve le nom du noeud
+          color: node.color // Assure-toi que le champ 'color' existe
+      })),
+      links: graphResult.links.map((link: { source: any; target: any; weight: any; }) => ({
+          source: link.source, // Conserve la source du lien
+          target: link.target, // Conserve la cible du lien
+          weight: link.weight   // Conserve le poids du lien
+      }))
+  };
+
+  // Envoie uniquement les données nécessaires
+  console.log('dataToSend', dataToSend)
   axiosInstance
-      .post('/graph/color/dsatur', graphResult)
+      .post('/graph/color/dsatur', dataToSend)
       .then(response => {
           setColorResult(response.data); 
           console.log('Graphe colorié:', response.data);
@@ -44,6 +63,7 @@ const colorGraph = () => {
           console.error('Erreur lors de la coloration du graphe:', error);
       });
 };
+
 
 
 
@@ -64,8 +84,6 @@ const colorGraph = () => {
       <Button onClick={() => colorGraph()}>Colorier</Button>
       {graphResult && <GraphViewer graph={graphResult} />}
       </div>
-
-
     </>
   )
 
